@@ -5,8 +5,8 @@ from django.db import models
 # Create your models here.
 
 class Link(models.Model):
-    STATUS_NORMAL = 1,
-    STATUS_DELETE = 0,
+    STATUS_NORMAL = 1
+    STATUS_DELETE = 0
     STATUS_ITEMS = (
         (STATUS_NORMAL, '正常'),
         (STATUS_DELETE, '删除'),
@@ -25,8 +25,8 @@ class Link(models.Model):
 
 
 class SideBar(models.Model):
-    STATUS_SHOW = 1,
-    STATUS_HIDE = 0,
+    STATUS_SHOW = 1
+    STATUS_HIDE = 0
     STATUS_ITEMS = (
         (STATUS_SHOW, '展示'),
         (STATUS_HIDE, '隐藏'),
