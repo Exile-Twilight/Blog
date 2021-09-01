@@ -1,3 +1,4 @@
+import xadmin
 from django.contrib.admin.models import LogEntry
 from django.contrib import admin
 from django.urls import reverse
@@ -7,6 +8,9 @@ from .models import Post, Category, Tag
 from .adminforms import PostAdminForm
 from blog.base_admin import BaseOwnerAdmin
 from blog.custom_site import custom_site
+from xadmin.layout import Row, Fieldset
+from xadmin.filters import manager
+from xadmin.filters import RelatedFieldListFilter
 
 
 # Register your models here.
@@ -44,6 +48,13 @@ class TagAdmin(BaseOwnerAdmin):
 
 
 class CategoryOwnerFilter(admin.SimpleListFilter):
+    # @classmethod
+    # def test(cls, field, request, params, model, admin_view, field_path):
+    #     return field.name == 'category'
+    #
+    # def __init__(self, field, request, params, model, model_admin, field_path):
+    #     super().__init__(field, request, params, model, model_admin, field_path)
+    #     self.lookup_choices = Category.objects.filter(owner=request.user).values_list('id', 'name')
     title = '分类过滤器'
     parameter_name = 'owner_category'
 
@@ -57,12 +68,15 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
         return queryset
 
 
+# manager.register(CategoryOwnerFilter, take_priority=True)
+
+
 @admin.register(Post, site=custom_site)
 class PostAdmin(BaseOwnerAdmin):
     list_display = ['title', 'category', 'status',
-                    'created_time', 'operator']
+                    'created_time', 'operator', 'pv', 'uv']
     list_display_links = []
-    list_filter = [CategoryOwnerFilter]
+    list_filter = ['category']
     search_fields = ['title', 'category__name']
 
     actions_on_top = False
@@ -80,24 +94,45 @@ class PostAdmin(BaseOwnerAdmin):
     #     'content',
     #     'tag'
     # ]
+    # form_layout = (
+    #     Fieldset(
+    #         '基础信息',
+    #         Row("title", "category"),
+    #         'status',
+    #         'tag',
+    #     ),
+    #     Fieldset(
+    #         '内容信息',
+    #         'desc',
+    #         'content'
+    #     )
+    # )
+
     fieldsets = (
-        ('基础配置', {
-            'description': '基础配置描述',
-            'fields': (
-                ('title', 'category'),
-                'status'
-            )
-        }),
-        ('内容', {
-            'fields': (
-                'desc', 'content'
-            )
-        }),
-        ('额外信息', {
-            'classes': ['collapse'],
-            'fields': ['tag'],
-        })
-    )
+                    '基础配置', {
+                        'description': '基础配置描述',
+                        'fields': (
+                            ('title', 'category'),
+                            'status',
+                        ),
+                    }
+                ),
+    ('内容', {
+        'fields': (
+            'desc',
+            'content',
+        ),
+    }),
+    ('内容', {
+        'field': (
+            'desc',
+            'content',
+        ),
+    }),
+    ('额外信息', {
+        'classes': ('wide',),
+        'fields': ('tag',),
+    })
 
     # filter_vertical = ['tag']
 
@@ -106,7 +141,6 @@ class PostAdmin(BaseOwnerAdmin):
             '<a href="{}">编辑</a>',
             reverse('cus_admin:app_blog_post_change', args=(obj.id,))
         )
-
     operator.short_description = '操作'
 
     def save_model(self, request, obj, form, change):
@@ -117,6 +151,14 @@ class PostAdmin(BaseOwnerAdmin):
         qs = super().get_queryset(request)
         return qs.filter(owner=request.user)
 
+    # @property
+    # def media(self):
+    #     media = super().media
+    #     media.add_js(['https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.js'])
+    #     media.add_css({
+    #         'all': ('https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css',),
+    #     })
+    #     return media
     class Media:
         css = {
             'all': ['https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css']
@@ -126,4 +168,4 @@ class PostAdmin(BaseOwnerAdmin):
 
 @admin.register(LogEntry, site=custom_site)
 class LogEntryAdmin(admin.ModelAdmin):
-    list_display = ['object_repr', 'object_id', 'action_flag', 'user', 'change_message','']
+    list_display = ['object_repr', 'object_id', 'action_flag', 'user', 'change_message']
