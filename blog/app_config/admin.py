@@ -1,4 +1,3 @@
-import xadmin
 from django.contrib import admin
 from .models import Link
 from .models import SideBar

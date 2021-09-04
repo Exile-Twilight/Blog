@@ -1,4 +1,3 @@
-import xadmin
 from django.contrib.admin.models import LogEntry
 from django.contrib import admin
 from django.urls import reverse
@@ -8,9 +7,6 @@ from .models import Post, Category, Tag
 from .adminforms import PostAdminForm
 from blog.base_admin import BaseOwnerAdmin
 from blog.custom_site import custom_site
-from xadmin.layout import Row, Fieldset
-from xadmin.filters import manager
-from xadmin.filters import RelatedFieldListFilter
 
 
 # Register your models here.
@@ -53,7 +49,8 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
     #     return field.name == 'category'
     #
     # def __init__(self, field, request, params, model, model_admin, field_path):
-    #     super().__init__(field, request, params, model, model_admin, field_path)
+    #     super().__init__(field, request, params, m
+    #     odel, model_admin, field_path)
     #     self.lookup_choices = Category.objects.filter(owner=request.user).values_list('id', 'name')
     title = '分类过滤器'
     parameter_name = 'owner_category'
@@ -76,7 +73,7 @@ class PostAdmin(BaseOwnerAdmin):
     list_display = ['title', 'category', 'status',
                     'created_time', 'operator', 'pv', 'uv']
     list_display_links = []
-    list_filter = ['category']
+    list_filter = [CategoryOwnerFilter]
     search_fields = ['title', 'category__name']
 
     actions_on_top = False
