@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'app_config',
     'app_comment',
     'blog',
-    'xadmin',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -104,6 +104,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 2,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

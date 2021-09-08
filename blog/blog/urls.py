@@ -1,16 +1,20 @@
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.sitemaps import views as sitemap_views
+from django.urls import include
+from rest_framework.routers import DefaultRouter
+from rest_framework.documentation import include_docs_urls
 from app_blog.views import (
     IndexView, CategoryView, TagView,
     PostDetailView, SearchView, AuthorView
 )
 from app_blog.rss import LatestPostFeed
 from app_blog.sitemap import PostSitemap
+from app_blog.apis import PostViewSet,CategoryViewSet
+# from app_blog.apis import post_list, PostList
 from app_comment.views import CommentView
 from app_config.views import LinkListView
 from .custom_site import custom_site
-import xadmin
 
 """blog URL Configuration
 
@@ -27,10 +31,16 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+router = DefaultRouter()
+router.register(r'post', PostViewSet, basename='api-post')
+router.register(r'category', CategoryViewSet, basename='api-category')
 
 urlpatterns = [
     url(r'^super_admin/', admin.site.urls, name='super-admin'),
-    #url(r'^admin/', xadmin.site.urls, name='xadmin'),
+    url(r'^api/', include(router.urls)),
+    url(r'^api/docs/', include_docs_urls(title='Blog apis')),
+    # url(r'^api/post/', post_list, name='post-list'),
+    # url(r'^api/post/', PostList.as_view(), name='post-list'),
     url(r'^admin/', custom_site.urls, name='admin'),
     url(r'^$', IndexView.as_view(), name='index'),
     url(r'^category/(?P<category_id>\d+)/$', CategoryView.as_view(), name='category-list'),
